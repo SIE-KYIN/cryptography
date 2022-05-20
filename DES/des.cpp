@@ -209,16 +209,16 @@ string Des::exclusive_or(string s1, string s2)
 
 void Des::mixer(string &left, string &right, int i)
 {
-	string right_expanded = permute(right, table_p_box, 48);
+	string expand = permute(right, table_p_box, 48);
 
 		// 화이트너(Whitener: XOR)
-		string x = exclusive_or(round_key[i], right_expanded);
+		string x_or = exclusive_or(round_key[i], expand);
 
-		// S-박스
+		// Substitute
 		string op = "";
 		for (int i = 0; i < 8; i++) {
-			int row = 2 * int(x[i * 6] - '0') + int(x[i * 6 + 5] - '0');
-			int col = 8 * int(x[i * 6 + 1] - '0') + 4 * int(x[i * 6 + 2] - '0') + 2 * int(x[i * 6 + 3] - '0') + int(x[i * 6 + 4] - '0');
+			int row = 2 * int(x_or[i * 6] - '0') + int(x_or[i * 6 + 5] - '0');
+			int col = 8 * int(x_or[i * 6 + 1] - '0') + 4 * int(x_or[i * 6 + 2] - '0') + 2 * int(x[i * 6 + 3] - '0') + int(x[i * 6 + 4] - '0');
 			int val = table_s_box[i][row][col];
 			op += char(val / 8 + '0');
 			val = val % 8;
@@ -232,7 +232,7 @@ void Des::mixer(string &left, string &right, int i)
 		op = permute(op, table_simple, 32);
 
 		// XOR left and op
-		x = exclusive_or(op, left);
+		x_or = exclusive_or(op, left);
 
 		left = x;
 
