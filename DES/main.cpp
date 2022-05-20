@@ -4,9 +4,9 @@ int main()
 {
 	Des d;
 
-	d.key_generate();	
+	d.key_generate();
 
-	cout << "\nEncryption:\n\n";
-	string cipher = d.encrypt();
-	cout << "\nCipher Text: " << cipher << endl;
+	d.encrypt();
+
+	d.print_ciphertext();
 }
