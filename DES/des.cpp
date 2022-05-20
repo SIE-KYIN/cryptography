@@ -1,6 +1,5 @@
 #include "des.hpp"
 
-
 Des::Des() : 
 		// 초기 치환 표
 		table_initial{58, 50, 42, 34, 26, 18, 10, 2,
@@ -27,7 +26,6 @@ Des::Des() :
 					16, 17, 18, 19, 20, 21, 20, 21,
 					22, 23, 24, 25, 24, 25, 26, 27,
 					28, 29, 28, 29, 30, 31, 32, 1 },
-
 		// S-박스
     	table_s_box			{ // S-박스 1
                         { 14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7,
@@ -82,11 +80,9 @@ Des::Des() :
                      31, 23, 15, 7, 62, 54, 46, 38, 
                      30, 22, 14, 6, 61, 53, 45, 37, 
                      29, 21, 13, 5, 28, 20, 12, 4 },
-
     	// 시프트 테이블 - 1, 2, 9, 16번째만 1
     	table_shift { 1, 1, 2, 2, 2, 2, 2, 2,
 							1, 2, 2, 2, 2, 2, 2, 1 },
-
     	// 키 축소표
     	table_key_compress { 14, 17, 11, 24, 1, 5, 3, 28, 
                          15, 6, 21, 10, 23, 19, 12, 4, 
@@ -211,31 +207,26 @@ void Des::mixer(string &left, string &right, int i)
 {
 	string expand = permute(right, table_p_box, 48);
 
-		// 화이트너(Whitener: XOR)
-		string x_or = exclusive_or(round_key[i], expand);
+	// 화이트너(Whitener: XOR)
+	string in_block = exclusive_or(round_key[i], expand);
 
-		// Substitute
-		string op = "";
-		for (int i = 0; i < 8; i++) {
-			int row = 2 * int(x_or[i * 6] - '0') + int(x_or[i * 6 + 5] - '0');
-			int col = 8 * int(x_or[i * 6 + 1] - '0') + 4 * int(x_or[i * 6 + 2] - '0') + 2 * int(x[i * 6 + 3] - '0') + int(x[i * 6 + 4] - '0');
-			int val = table_s_box[i][row][col];
-			op += char(val / 8 + '0');
-			val = val % 8;
-			op += char(val / 4 + '0');
-			val = val % 4;
-			op += char(val / 2 + '0');
-			val = val % 2;
-			op += char(val + '0');
-		}
-		// Straight D-box
-		op = permute(op, table_simple, 32);
+	// Substitute
+	string out_block = "";
+	for (int i = 0; i < 8; i++) {
+		int row = 2 * int(in_block[i * 6] - 48) + int(in_block[i * 6 + 5] - 48);
+		int col = 8 * int(in_block[i * 6 + 1] - 48) + 4 * int(in_block[i * 6 + 2] - 48) 
+							+ 2 * int(in_block[i * 6 + 3] - 48) + int(in_block[i * 6 + 4] - 48);
+		int value = table_s_box[i][row][col];
+		out_block += char(value / 8 + 48); value = value % 8;
+		out_block += char(value / 4 + 48); value = value % 4;
+		out_block += char(value / 2 + 48); value = value % 2;
+		out_block += char(value + 48);
+	}
+	// Straight D-box
+	out_block = permute(out_block, table_simple, 32);
 
-		// XOR left and op
-		x_or = exclusive_or(op, left);
-
-		left = x;
-
+	// XOR left and out_block
+	left = exclusive_or(out_block, left);
 }
 
 void Des::encrypt()
