@@ -103,7 +103,7 @@ Des::~Des()
 	return ;
 }
 
-string Des::hex_to_bin(string s)
+string Des::hex_to_bin(const string s)
 {
 	using std::map; 
 	map<char, string> m;
@@ -132,7 +132,7 @@ string Des::hex_to_bin(string s)
 	return ret;
 }
 
-string Des::bin_to_hex(string s)
+string Des::bin_to_hex(const string s)
 {
 	map<string, char> m;
 	string ret = "";
@@ -168,7 +168,7 @@ string Des::bin_to_hex(string s)
 	return ret;
 }
 
-string Des::permute(string before, int* table, int n)
+string Des::permute(const string before, const int* table, const int n)
 {
 	string after = "";
 	
@@ -178,7 +178,7 @@ string Des::permute(string before, int* table, int n)
 	return after;
 }
 
-string Des::shift_left(string s, int n)
+string Des::shift_left(string s, const int n)
 {
 	string tmp;
 
@@ -193,7 +193,7 @@ string Des::shift_left(string s, int n)
 	return s;
 }
 
-string Des::exclusive_or(string s1, string s2)
+string Des::exclusive_or(const string s1, const string s2)
 {
 	string ret = "";
 
@@ -203,12 +203,12 @@ string Des::exclusive_or(string s1, string s2)
 	return ret ;
 }
 
-void Des::mixer(string &left, string &right, int i)
+void Des::mixer(string &left, string &right, const int n)
 {
 	string expand = permute(right, table_p_box, 48);
 
 	// 화이트너(Whitener: XOR)
-	string in_block = exclusive_or(round_key[i], expand);
+	string in_block = exclusive_or(round_key[n], expand);
 
 	// Substitute
 	string out_block = "";
